@@ -1,0 +1,28 @@
+package com.example.todoapp.TodoAppForKotlinAndMvn.repository
+
+import com.example.todoapp.TodoAppForKotlinAndMvn.entity.ToDo
+
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
+import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
+import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
+
+@Repository
+interface ToDoRepository : JpaRepository<ToDo, Long> {
+
+    fun findOneById(id: Int): ToDo
+
+    fun findByUserId(userId: Int): MutableList<ToDo>
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE ToDo AS t SET t.text = :text WHERE t.id = :id")
+    fun updateTextById(@Param("id") id: Int, @Param("text") text: String) : Int
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE ToDo AS t SET t.completeFlg = true, completeDatetime = NOW() WHERE t.id = :id")
+    fun updateCompleteFlgById(@Param("id") id: Int) : Int
+}
